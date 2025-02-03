@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./url-shortener-backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/arcube
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    restart: always
+
+  frontend:
+    build:
+      context: ./url-shortener-frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    restart: always
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017" 
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
